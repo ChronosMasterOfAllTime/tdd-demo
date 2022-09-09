@@ -1,8 +1,17 @@
 function add(numbers) {
   return numbers
-    .split(",")
-    .map((x) => parseInt(x))
-    .reduce((a, b) => a + b);
+    .trim()
+    .split(',')
+    .map((x) => parseInt(x)) // this wont support floats, and doesnt check for NaN
+    .reduce((a, b) => a + b)
 }
 
-exports.add = add;
+exports.add = add
+
+// SOLUTIONS
+
+/**
+ * Split RegExp /[,\s;]/
+ * parseFloat(x)
+ * .filter(x => !isNaN(x))
+ */

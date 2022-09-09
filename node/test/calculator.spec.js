@@ -1,5 +1,17 @@
-const calculator = require("../src/calculator");
+const calculator = require('../src/calculator')
 
-test("string with a single number should result in the number itself", () => {
-  expect(calculator.add("1")).toBe(1);
-});
+test('string with a single number should result in the number itself', () => {
+  expect(calculator.add('1')).toBe(1)
+})
+test('Should add integers successfully', () => {
+  expect(calculator.add('1,   2  ,3,4    ,     5  ')).toBe(15)
+})
+// test('should handle spaces and semi colons', () => {
+//   expect(calculator.add('1 2;3 4,5')).toBe(15)
+// })
+// test('should ignore non-numbers', () => {
+//   expect(calculator.add(',1,word,2,3,4,cat')).toBe(10)
+// })
+// test('should add floats', () => {
+//   expect(calculator.add('1,1.2,2.5')).toBe(4.7)
+// })

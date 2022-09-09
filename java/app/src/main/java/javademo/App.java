@@ -15,12 +15,12 @@ public class App {
     }
 
     App() {
-        this("Hello World!");
+        this.setGreeting("Hello World!");
     }
 
-    App(String msg) {
-        this.setGreeting(msg);
-    }
+    // App(String msg) {
+    // this.setGreeting(msg);
+    // }
 
     public static void main(String[] args) {
         System.out.println(new App().getGreeting());

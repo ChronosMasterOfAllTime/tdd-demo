@@ -12,6 +12,9 @@ plugins {
 
     // Apply the application plugin to add support for building a CLI application in Java.
     id 'application'
+
+    // fancy test logger
+    id 'com.adarshr.test-logger' version "3.2.0"
 }
 
 repositories {
@@ -34,6 +37,11 @@ dependencies {
 application {
     // Define the main class for the application.
     mainClass = 'javademo.App'
+}
+
+testlogger {
+    theme 'mocha-parallel' // project level
+    slowThreshold 5000
 }
 
 tasks.named('test') {

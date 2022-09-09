@@ -4,16 +4,33 @@
 package javademo
 
 import spock.lang.Specification
+import spock.lang.Unroll
 
 class AppTest extends Specification {
-    def "application has a greeting"() {
+    @Unroll
+    def "application has '#expected' when greeting is '#greeting'"(String greeting, String expected) {
         setup:
-        def app = new App()
+        App app = new App();
+        // App app;
+        // if (greeting == null) {
+        //     app = new App()
+        // } else {
+        //     app = new App(greeting)
+        // }
 
         when:
-        def result = app.greeting
+        String result = app.greeting
 
         then:
-        result == null
+        result == expected
+        
+        where:
+        greeting       | expected
+        null           | "Hello World!"
+        "Γεια!"        | "Γεια!" 
+        "¡Hola!"       | "¡Hola!"
+        "Bonjour!"     | "Bonjour!"
+        "Buon Giorno!" | "Buon Giorno!"
+        "こんにちは!"    | "こんにちは!"
     }
 }
