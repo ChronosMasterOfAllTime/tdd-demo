@@ -1,10 +1,10 @@
-const calculator = require('../src/calculator')
+import { add } from '@/calculator'
 
 test('string with a single number should result in the number itself', () => {
-  expect(calculator.add('1')).toBe(1)
+  expect(add('1')).toBe(1)
 })
 test('Should add integers successfully', () => {
-  expect(calculator.add('1,   2  ,3,4    ,     5  ')).toBe(15)
+  expect(add('1,   2  ,3,4    ,     5  ')).toBe(15)
 })
 // test('should handle spaces and semi colons', () => {
 //   expect(calculator.add('1 2;3 4,5')).toBe(15)

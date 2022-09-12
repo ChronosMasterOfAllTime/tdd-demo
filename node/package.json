@@ -3,15 +3,40 @@
   "version": "1.0.0",
   "main": "src/app.js",
   "scripts": {
-    "prestart": "yarn",
-    "start": "node src/app.js",
-    "pretest": "yarn",
-    "test": "jest"
+    "prestart": "npm install",
+    "start": "npm run build && node lib/app.js",
+    "pretest": "npm install",
+    "test": "jest",
+    "format": "prettier --check .",
+    "format:write": "prettier --write .",
+    "lint": "eslint .",
+    "lint:fix": "eslint --fix .",
+    "type-check": "tsc --noEmit",
+    "type-check:watch": "npm run type-check -- --watch",
+    "build": "npm run build:types && npm run build:js",
+    "build:types": "tsc --emitDeclarationOnly",
+    "build:js": "babel src --out-dir lib --extensions \".ts,.tsx\" --source-maps inline"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "jest": "^29.0.2"
+    "@babel/cli": "^7.18.10",
+    "@babel/core": "^7.19.0",
+    "@babel/plugin-proposal-class-properties": "^7.18.6",
+    "@babel/preset-env": "^7.19.0",
+    "@babel/preset-typescript": "^7.18.6",
+    "@types/jest": "^29.0.1",
+    "@types/node": "^18.7.16",
+    "@typescript-eslint/eslint-plugin": "^5.36.2",
+    "@typescript-eslint/parser": "^5.36.2",
+    "babel-jest": "^29.0.3",
+    "babel-plugin-module-resolver": "^4.1.0",
+    "eslint": "^8.23.1",
+    "eslint-config-prettier": "^8.5.0",
+    "jest": "^29.0.2",
+    "prettier": "^2.7.1",
+    "ts-jest": "^29.0.0",
+    "typescript": "^4.8.3"
   }
 }

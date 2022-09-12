@@ -1,15 +1,8 @@
-const http = require('http')
-const qs = require('querystring')
-const calculator = require('./calculator')
-const util = require('util')
+import { add } from '@/calculator'
+import { createServer } from 'http'
+import * as qs from 'querystring'
 
-const server = http.createServer(function (request, response) {
-  console.dir(request.param)
-  console.log(request.method)
-  console.log(request.path)
-
-  console.log(util.inspect(request))
-
+const server = createServer(function (request, response) {
   if (request.method == 'POST') {
     console.log('POST')
     let body = ''
@@ -18,12 +11,9 @@ const server = http.createServer(function (request, response) {
     })
 
     request.on('end', function () {
-      // const post = new URLSearchParams(body);
-      // const numbers = post.get("numbers");
-
       const post = qs.parse(body)
-      const numbers = post.numbers
-      const result = calculator.add(numbers)
+      const numbers = post.numbers as string
+      const result = add(numbers)
       response.writeHead(200, { 'Content-Type': 'text/html' })
       response.end(generateHTML(numbers, result))
     })
@@ -33,7 +23,7 @@ const server = http.createServer(function (request, response) {
   }
 })
 
-function generateHTML(numbers, result) {
+function generateHTML(numbers?: string, result?: number) {
   return `<html>
             <body>
                 <form name="demo" method="post" action="http://localhost:3000">Numbers: 
@@ -50,3 +40,7 @@ const port = 3000
 const host = 'localhost'
 server.listen(port, host)
 console.log(`Listening at http://${host}:${port}`)
+
+/* replacers for Deprecation */
+// const post = new URLSearchParams(body);
+// const numbers = post.get("numbers");
