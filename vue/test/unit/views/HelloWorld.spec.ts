@@ -22,7 +22,7 @@ describe('HelloWorld.vue', () => {
 
   const clickCount = 60
 
-  test(`should disable button after ${clickCount} clicks`, async () => {
+  test(`should disable button after ${clickCount} clicks and display different messages`, async () => {
     const nButton: VueWrapper<InstanceType<typeof NButton>> =
       wrapper.findComponent(NButton)
 
@@ -32,6 +32,9 @@ describe('HelloWorld.vue', () => {
     for (let i = 0; i < clickCount + 1; i++) {
       ;(nButton.element as HTMLButtonElement).click()
       await wrapper.vm.$nextTick()
+      if (i - 1 === 50) expect(nButton.text()).toBe('Uh-oh')
+      if (i - 1 === 30) expect(nButton.text()).toBe('Slow Down..')
+      if (i - 1 === 10) expect(nButton.text()).toBe('Great Job!')
     }
 
     expect(nButton.attributes().disabled).toBe('true')
