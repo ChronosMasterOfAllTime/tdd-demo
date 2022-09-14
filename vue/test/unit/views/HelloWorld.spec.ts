@@ -20,18 +20,21 @@ describe('HelloWorld.vue', () => {
     expect(wrapper.findComponent(HelloWorld).exists()).toBe(true)
   })
 
-  test('should disable button after 60 clicks', async () => {
+  const clickCount = 60
+
+  test(`should disable button after ${clickCount} clicks`, async () => {
     const nButton: VueWrapper<InstanceType<typeof NButton>> =
       wrapper.findComponent(NButton)
 
     expect(nButton.exists()).toBe(true)
     expect(nButton.attributes().disabled).toBe('false')
 
-    for (let i = 0; i < 61; i++) {
+    for (let i = 0; i < clickCount + 1; i++) {
       ;(nButton.element as HTMLButtonElement).click()
       await wrapper.vm.$nextTick()
     }
 
     expect(nButton.attributes().disabled).toBe('true')
+    expect(nButton.text()).toBe(`It's Broken!`)
   })
 })
