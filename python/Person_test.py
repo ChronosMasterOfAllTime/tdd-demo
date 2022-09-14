@@ -35,3 +35,10 @@ class Testing(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+
+
+# Solutions
+
+    # person = Person.Person(username=self.expected)
+
+    # id = person.get_id_by_field('username', self.expected)
