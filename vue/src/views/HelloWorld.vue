@@ -69,6 +69,7 @@ const message = computed(() => {
   if (main.count >= 60) return `It's Broken!`
   if (main.count > 50) return 'Uh-oh'
   if (main.count > 30) return 'Slow Down..'
+  if (main.count > 20) return 'Woah there, buddy..'
   if (main.count > 10) return 'Great Job!'
   return 'Click Me'
 })

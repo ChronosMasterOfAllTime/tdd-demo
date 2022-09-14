@@ -10,13 +10,13 @@ class AppTest extends Specification {
     @Unroll
     def "application has '#expected' when greeting is '#greeting'"(String greeting, String expected) {
         setup:
-        App app = new App();
-        // App app;
-        // if (greeting == null) {
-        //     app = new App()
-        // } else {
-        //     app = new App(greeting)
-        // }
+        // App app = new App();
+        App app;
+        if (greeting == null) {
+            app = new App()
+        } else {
+            app = new App(greeting)
+        }
 
         when:
         String result = app.greeting

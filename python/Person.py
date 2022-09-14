@@ -1,9 +1,9 @@
 class Person:
     users = []
 
-    def __init__(self, username=None):
-        if username is not None and len(username) > 0:
-            self.set_name(username)
+    def __init__(self, **kwargs):
+        if len(kwargs) > 0 and 'username' in kwargs:
+            self.set_user(kwargs)
 
     def get_usernames(self):
         users_dict = {}
@@ -12,15 +12,18 @@ class Person:
 
         return users_dict
 
-    def set_name(self, user_name):
-        self.users.append({'username': user_name})
+    def set_user(self, user):
+        if 'username' not in user:
+            return -1
+
+        self.users.append(user)
         return len(self.users) - 1
 
-    def get_id_by_name(self, username):
+    def get_id_by_field(self, field, lookup):
         users_dict = self.get_usernames()
 
         for k in users_dict:
-            if users_dict[k]['username'] == username:
+            if users_dict[k][field] == lookup:
                 return k
 
         return {'error': 'There is no such user'}

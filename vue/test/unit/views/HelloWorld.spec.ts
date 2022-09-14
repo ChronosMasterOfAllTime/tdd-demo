@@ -34,6 +34,7 @@ describe('HelloWorld.vue', () => {
       await wrapper.vm.$nextTick()
       if (i - 1 === 50) expect(nButton.text()).toBe('Uh-oh')
       if (i - 1 === 30) expect(nButton.text()).toBe('Slow Down..')
+      if (i - 1 === 20) expect(nButton.text()).toBe('Woah there, buddy..')
       if (i - 1 === 10) expect(nButton.text()).toBe('Great Job!')
     }
 

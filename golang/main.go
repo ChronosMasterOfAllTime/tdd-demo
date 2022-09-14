@@ -10,7 +10,7 @@ func main() {
 }
 
 // IndexOf gets the index of an element (comparables only)
-func IndexOf(elems []string, lookup string) int {
+func IndexOf[T comparable](elems []T, lookup T) int {
 	for i, s := range elems {
 		if lookup == s {
 			return i
@@ -20,21 +20,6 @@ func IndexOf(elems []string, lookup string) int {
 }
 
 // SliceContains checks whether or not an element exists (comparables only)
-func SliceContains(elems []string, lookup string) bool {
+func SliceContains[T comparable](elems []T, lookup T) bool {
 	return IndexOf(elems, lookup) > -1
 }
-
-// // IndexOf gets the index of an element (comparables only)
-// func IndexOf[T comparable](elems []T, lookup T) int {
-// 	for i, s := range elems {
-// 		if lookup == s {
-// 			return i
-// 		}
-// 	}
-// 	return -1
-// }
-
-// // SliceContains checks whether or not an element exists (comparables only)
-// func SliceContains[T comparable](elems []T, lookup T) bool {
-// 	return IndexOf(elems, lookup) > -1
-// }

@@ -6,9 +6,9 @@ class Testing(unittest.TestCase):
     expected = 'test'
 
     def test_set_success(self):
-        person = Person.Person(self.expected)
+        person = Person.Person(username=self.expected)
 
-        id = person.get_id_by_name(self.expected)
+        id = person.get_id_by_field('username', self.expected)
 
         if type(id) is dict:
             self.failIf('error' in id,
@@ -25,7 +25,7 @@ class Testing(unittest.TestCase):
     def test_get_fail(self):
         person = Person.Person()
 
-        id = person.get_id_by_name('wrong')
+        id = person.get_id_by_field('username', 'wrong')
 
         user = person.get_user_by_id('wrong')
 
