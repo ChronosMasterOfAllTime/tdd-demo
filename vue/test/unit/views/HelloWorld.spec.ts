@@ -41,3 +41,7 @@ describe('HelloWorld.vue', () => {
     expect(nButton.text()).toBe(`It's Broken!`)
   })
 })
+
+// solution
+
+// if (i - 1 === 20) expect(nButton.text()).toBe('Woah there, buddy...')
