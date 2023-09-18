@@ -26,9 +26,9 @@ test:
 	COVERAGE=$$(go tool cover -func cp.out | grep total | awk '{print substr($$3, 1, length($$3)-1)}'); \
 	MEETS_THRESHOLD=$$(echo $$COVERAGE | awk '{if ($$1 > $(THRESHOLD)) {print "true"} else {print "false"} }'); \
 	if [ $$MEETS_THRESHOLD == "true" ]; then \
-		echo "Coverage is $$COVERAGE% which is greater than $(THRESHOLD)%"; \
+		echo "✅ Coverage is $$COVERAGE% which is greater than $(THRESHOLD)%"; \
 		exit 0; \
 	else \
-		echo "Coverage is $$COVERAGE% which is less than $(THRESHOLD)%"; \
+		echo "❌ Coverage is $$COVERAGE% which is less than $(THRESHOLD)%"; \
 		exit 1; \
 	fi; \
