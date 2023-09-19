@@ -72,7 +72,7 @@ jobs:
         working-directory: ./vue
       - name: Unit Tests
         if: steps.check-files.outputs.has_changes == 'true'
-        run: npm run test -- --coverage
+        run: npm run coverage
         working-directory: ./vue
         env:
           CI: true
