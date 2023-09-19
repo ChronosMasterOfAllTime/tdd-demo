@@ -1,4 +1,4 @@
-const { Given, When, Then } = require('cypress-cucumber-preprocessor/steps')
+import { Given, When, Then } from '@badeball/cypress-cucumber-preprocessor'
 
 Given('I open the home page', () => {
   cy.visit(Cypress.env('BASE_URL'), {
