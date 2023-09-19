@@ -1,6 +1,6 @@
 """Unit tests for person.py."""
 import unittest
-from .person import Person
+from .Person import Person
 
 
 class Testing(unittest.TestCase):
