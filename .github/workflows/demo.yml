@@ -269,7 +269,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest]
-        dotnet-version: ["^3.11"]
+        dotnet-version: ["^7.0"]
     steps:
       - uses: actions/checkout@v3
         with:
@@ -281,7 +281,7 @@ jobs:
           since_last_remote_commit: "false"
       - name: Check changed files
         id: check-files
-        run: echo "has_changes=$(echo ${{ contains(steps.changed-files.outputs.all_modified_files, 'python/') }})" >> $GITHUB_OUTPUT
+        run: echo "has_changes=$(echo ${{ contains(steps.changed-files.outputs.all_modified_files, 'dotnet/') }})" >> $GITHUB_OUTPUT
       - name: Use .NET ${{ matrix.dotnet-version }}
         if: steps.check-files.outputs.has_changes == 'true'
         uses: actions/setup-dotnet@v3
@@ -295,3 +295,36 @@ jobs:
         if: steps.check-files.outputs.has_changes == 'true'
         run: ./coverage.sh
         working-directory: ./dotnet
+
+  java:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        java-version: ["17"]
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Get changed files since last commit
+        id: changed-files
+        uses: tj-actions/changed-files@v35.4.1
+        with:
+          since_last_remote_commit: "false"
+      - name: Check changed files
+        id: check-files
+        run: echo "has_changes=$(echo ${{ contains(steps.changed-files.outputs.all_modified_files, 'java/') }})" >> $GITHUB_OUTPUT
+      - name: Use Java ${{ matrix.java-version }}
+        if: steps.check-files.outputs.has_changes == 'true'
+        uses: actions/setup-java@v3
+        with:
+          distribution: "zulu"
+          java-version: ${{ matrix.java-version }}
+      - name: Run build
+        if: steps.check-files.outputs.has_changes == 'true'
+        run: ./gradlew build -x test
+        working-directory: ./java
+      - name: Java Coverage
+        if: steps.check-files.outputs.has_changes == 'true'
+        run: ./coverage.sh
+        working-directory: ./java
