@@ -33,7 +33,15 @@ const mainConfig = {
     '.d.ts$'
   ],
   setupFilesAfterEnv: ['./jest.setup.js'],
-  cacheDirectory: '<rootDir>/.jest_cache'
+  cacheDirectory: '<rootDir>/.jest_cache',
+  coverageThreshold: {
+    global: {
+      branches: 80,
+      functions: 80,
+      lines: 80,
+      statements: -10
+    }
+  }
 }
 
 let fullCoverage = false
