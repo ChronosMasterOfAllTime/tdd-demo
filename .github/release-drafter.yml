@@ -1,0 +1,68 @@
+name-template: "v$RESOLVED_VERSION ⭐"
+tag-template: "v$RESOLVED_VERSION"
+categories:
+  - title: "🚀 Features"
+    labels:
+      - "feature"
+      - "enhancement"
+      - "minor-release"
+  - title: "🐛 Bug Fixes"
+    labels:
+      - "fix"
+      - "bugfix"
+      - "bug"
+      - "patch-release"
+  - title: "🖌 Updates in UI"
+    label: "ui"
+  - title: "Backend Changes (dotnet, go, java, node, python)"
+    label: "backend"
+  - title: "🧰 Maintenance"
+    labels:
+      - "chore"
+      - "maintenance"
+      - "dependencies"
+      - "patch-release"
+  - title: "Infrastructure"
+    labels:
+      - "infrastructure"
+change-template: "- $TITLE @$AUTHOR (#$NUMBER)"
+change-title-escapes: '\<*_&' # You can add # and @ to disable mentions, and add ` to disable code blocks.
+autolabeler:
+  - label: "maintenance"
+    files:
+      - "*.md"
+    branch:
+      - '/dependabot\/.+/i'
+  - label: "bug"
+    branch:
+      - '/fix\/.+/'
+    title:
+      - "/fix/i"
+  - label: "enhancement"
+    branch:
+      - '/feature\/.+/'
+  - label: "ui"
+    files:
+      - "vue/**/*"
+  - label: "backend"
+    files:
+      - "go/**/*"
+      - "dotnet/**/*"
+      - "java/**/*"
+      - "node/**/*"
+      - "python/**/*"
+version-resolver:
+  major:
+    labels:
+      - "major-release"
+  minor:
+    labels:
+      - "minor-release"
+  patch:
+    labels:
+      - "patch-release"
+  default: patch
+template: |
+  ## Changes since $PREVIOUS_TAG
+
+  $CHANGES
