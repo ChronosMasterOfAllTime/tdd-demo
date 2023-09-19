@@ -7,5 +7,12 @@
  * in the user manual at https://docs.gradle.org/7.5.1/userguide/multi_project_builds.html
  */
 
+ buildscript {
+  repositories { mavenCentral() }
+  dependencies {
+    classpath 'com.netflix.nebula:gradle-lint-plugin:latest.release'
+  }
+}
+
 rootProject.name = 'javademo'
 include('app')
