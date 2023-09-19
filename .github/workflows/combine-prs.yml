@@ -145,7 +145,7 @@ jobs:
             await github.rest.pulls.create({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              title: 'Combined PR',
+              title: 'Combined ${{ github.event.inputs.branchPrefix }} PRs',
               head: '${{ github.event.inputs.combineBranchName }}',
               base: baseBranch,
               body: body
