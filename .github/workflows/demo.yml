@@ -66,11 +66,7 @@ jobs:
         if: steps.check-files.outputs.has_changes == 'true'
         run: npm run lint
         working-directory: ./vue
-      - name: Validate UI
-        if: steps.check-files.outputs.has_changes == 'true'
-        run: npm run validate:types
-        working-directory: ./vue
-      - name: Build UI
+      - name: Build & Validate UI
         if: steps.check-files.outputs.has_changes == 'true'
         run: npm run build
         working-directory: ./vue
@@ -209,16 +205,18 @@ jobs:
             ${{ runner.os }}-go-mod-
       - name: Download Dependencies
         if: ((steps.check-files.outputs.has_changes == 'true') && (steps.cache-deps.outputs.cache-hit != 'true' || steps.cache-mod-deps.outputs.cache-hit != 'true'))
-        run: go mod download
-        working-directory: ./python
+        run: |
+          go mod download
+          go install ./...
+        working-directory: ./golang
       - name: Build Binaries
         if: steps.check-files.outputs.has_changes == 'true'
         run: make api-all
-        working-directory: ./python
+        working-directory: ./golang
       - name: Go Coverage
         if: steps.check-files.outputs.has_changes == 'true'
         run: make test
-        working-directory: ./python
+        working-directory: ./golang
 
   python:
     runs-on: ${{ matrix.os }}
