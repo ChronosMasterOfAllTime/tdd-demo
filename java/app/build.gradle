@@ -30,14 +30,14 @@ repositories {
 
 dependencies {
     // Use the latest Groovy version for Spock testing
-    testImplementation 'org.codehaus.groovy:groovy:3.0.10'
+    testImplementation 'org.codehaus.groovy:groovy:3.0.19'
 
     // Use the awesome Spock testing and specification framework even with Java
-    testImplementation 'org.spockframework:spock-core:2.1-groovy-3.0'
+    testImplementation 'org.spockframework:spock-core:2.3-groovy-4.0'
     testImplementation 'junit:junit:4.13.2'
 
     // This dependency is used by the application.
-    implementation 'com.google.guava:guava:31.0.1-jre'
+    implementation 'com.google.guava:guava:32.1.2-jre'
 }
 
 application {
