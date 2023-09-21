@@ -1,0 +1,35 @@
+name: "Publish Release"
+env:
+  GH_TOKEN: ${{ secrets.GH_PAT_TOKEN }}
+on:
+  workflow_dispatch:
+  release:
+    types: [published]
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.GH_PAT_TOKEN }}
+          fetch-depth: 0
+      - name: Get release version
+        id: get_release_version
+        run: echo "release_version=$(echo $GITHUB_REF | sed -e 's/refs\/tags\///')" >> $GITHUB_OUTPUT
+      - name: Get release notes
+        id: get_release_notes
+        # this EOF bit looks a little goofy but it's the official way of handling multiline strings: https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#multiline-strings
+        run: |
+          EOF=$(dd if=/dev/urandom bs=15 count=1 status=none | base64)
+          echo "release_notes<<${EOF}" >> "${GITHUB_OUTPUT}"
+          NOTES=$(gh release view ${{ steps.get_release_version.outputs.release_version }} --json body -q .body)
+          echo "$NOTES" >> "${GITHUB_OUTPUT}"
+          echo "${EOF}" >> "${GITHUB_OUTPUT}"
+      - name: Create release
+        run: |
+          git config --global user.name "${GITHUB_ACTOR}"
+          git config --global user.email "${GITHUB_ACTOR}@users.noreply.github.com"
+          git checkout -b release/${{ steps.get_release_version.outputs.release_version }} tags/${{ steps.get_release_version.outputs.release_version }}
+          git push -u origin release/${{ steps.get_release_version.outputs.release_version }}
+          echo "${{ steps.get_release_notes.outputs.release_notes }}" | gh pr create --title "Release ${{ steps.get_release_version.outputs.release_version }} --> Main" -F - --base main --head release/${{ steps.get_release_version.outputs.release_version }}

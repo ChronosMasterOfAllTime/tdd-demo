@@ -1,0 +1,328 @@
+name: "Demo Workflows"
+
+on: [pull_request]
+
+jobs:
+  vue:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macOS-latest, windows-latest]
+        node-version: [18.x]
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Get changed files since last commit
+        id: changed-files
+        uses: tj-actions/changed-files@v35.4.1
+        with:
+          since_last_remote_commit: "false"
+      - name: Check changed files
+        id: check-files
+        run: echo "has_changes=$(echo ${{ contains(steps.changed-files.outputs.all_modified_files, 'vue/') }})" >> $GITHUB_OUTPUT
+      - name: Use Node.js ${{ matrix.node-version }}
+        if: steps.check-files.outputs.has_changes == 'true'
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: Set Cypress Cache
+        run: |
+          if [ "$RUNNER_OS" == "Linux" ]; then
+              echo "CYPRESS_CACHE_FOLDER=~/.cache/Cypress" >> $GITHUB_ENV
+          elif [ "$RUNNER_OS" == "Windows" ]; then
+               echo "CYPRESS_CACHE_FOLDER=~/AppData/Local/Cypress/Cache" >> $GITHUB_ENV
+          elif [ "$RUNNER_OS" == "macOS" ]; then
+               echo "CYPRESS_CACHE_FOLDER=~/Library/Caches/Cypress" >> $GITHUB_ENV
+          else
+               echo "$RUNNER_OS not supported"
+               exit 1
+          fi
+        shell: bash
+      - name: Get npm cache directory path
+        if: steps.check-files.outputs.has_changes == 'true'
+        id: npm-cache-dir-path
+        run: echo "dir=$(npm config get cache)" >> $GITHUB_OUTPUT
+      - uses: actions/cache@v3
+        if: steps.check-files.outputs.has_changes == 'true'
+        id: npm-cache
+        with:
+          path: |
+            **/node_modules
+            **/.eslintcache
+            **/.vitest_cache
+            node/dist
+            ${{ env.CYPRESS_CACHE_FOLDER }}
+            ${{ steps.npm-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-npm-
+      - name: Install Node Dependencies
+        if: steps.check-files.outputs.has_changes == 'true' && steps.npm-cache.outputs.cache-hit != 'true'
+        run: npm i
+        working-directory: ./vue
+      - name: Lint
+        if: steps.check-files.outputs.has_changes == 'true'
+        run: npm run lint
+        working-directory: ./vue
+      - name: Build & Validate UI
+        if: steps.check-files.outputs.has_changes == 'true'
+        run: npm run build
+        working-directory: ./vue
+      - name: Unit Tests
+        if: steps.check-files.outputs.has_changes == 'true'
+        run: npm run coverage
+        working-directory: ./vue
+        env:
+          CI: true
+      - name: E2E Tests
+        if: steps.check-files.outputs.has_changes == 'true'
+        run: npm run test:e2e:headless
+        working-directory: ./vue
+        env:
+          DISABLE_VIDEO_RECORDING: true
+          CYPRESS_CACHE_FOLDER: ${{ env.CYPRESS_CACHE_FOLDER }}
+
+  node:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macOS-latest, windows-latest]
+        node-version: [18.x]
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Get changed files since last commit
+        id: changed-files
+        uses: tj-actions/changed-files@v35.4.1
+        with:
+          since_last_remote_commit: "false"
+      - name: Check changed files
+        id: check-files
+        run: echo "has_changes=$(echo ${{ contains(steps.changed-files.outputs.all_modified_files, 'node/') }})" >> $GITHUB_OUTPUT
+      - name: Use Node.js ${{ matrix.node-version }}
+        if: steps.check-files.outputs.has_changes == 'true'
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: Set Cypress Cache
+        run: |
+          if [ "$RUNNER_OS" == "Linux" ]; then
+              echo "CYPRESS_CACHE_FOLDER=~/.cache/Cypress" >> $GITHUB_ENV
+          elif [ "$RUNNER_OS" == "Windows" ]; then
+               echo "CYPRESS_CACHE_FOLDER=~/AppData/Local/Cypress/Cache" >> $GITHUB_ENV
+          elif [ "$RUNNER_OS" == "macOS" ]; then
+               echo "CYPRESS_CACHE_FOLDER=~/Library/Caches/Cypress" >> $GITHUB_ENV
+          else
+               echo "$RUNNER_OS not supported"
+               exit 1
+          fi
+        shell: bash
+      - name: Get npm cache directory path
+        if: steps.check-files.outputs.has_changes == 'true'
+        id: npm-cache-dir-path
+        run: echo "dir=$(npm config get cache)" >> $GITHUB_OUTPUT
+      - uses: actions/cache@v3
+        if: steps.check-files.outputs.has_changes == 'true'
+        id: npm-cache
+        with:
+          path: |
+            node/dist
+            **/node_modules
+            **/.eslintcache
+            ${{ steps.npm-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-npm-
+      - name: Install Node Dependencies
+        if: steps.check-files.outputs.has_changes == 'true' && steps.npm-cache.outputs.cache-hit != 'true'
+        run: npm i
+        working-directory: ./node
+      - name: Lint
+        if: steps.check-files.outputs.has_changes == 'true'
+        run: npm run lint
+        working-directory: ./node
+      - name: Build
+        if: steps.check-files.outputs.has_changes == 'true'
+        run: npm run build
+        working-directory: ./node
+      - name: Unit Tests
+        if: steps.check-files.outputs.has_changes == 'true'
+        run: npm run test -- --coverage
+        working-directory: ./node
+
+  golang:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        go-version: ["^1.19.0"]
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Get changed files since last commit
+        id: changed-files
+        uses: tj-actions/changed-files@v35.4.1
+        with:
+          since_last_remote_commit: "false"
+      - name: Check changed files
+        id: check-files
+        run: echo "has_changes=$(echo ${{ contains(steps.changed-files.outputs.all_modified_files, 'golang/') }})" >> $GITHUB_OUTPUT
+      - name: Use Go ${{ matrix.go-version }}
+        if: steps.check-files.outputs.has_changes == 'true'
+        uses: actions/setup-go@v3
+        with:
+          go-version: ${{ matrix.go-version }}
+      - name: Cache Go Paths
+        id: go-cache-paths
+        if: steps.check-files.outputs.has_changes == 'true'
+        run: |
+          echo "go-build=$(go env GOCACHE)" >> $GITHUB_OUTPUT
+          echo "go-mod=$(go env GOMODCACHE)" >> $GITHUB_OUTPUT
+      - name: Cache build deps
+        id: cache-deps
+        uses: actions/cache@v3
+        if: steps.check-files.outputs.has_changes == 'true'
+        with:
+          path: ${{ steps.go-cache-paths.outputs.go-build }}
+          key: ${{ runner.os }}-go-build-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-build-${{ hashFiles('**/go.sum') }}
+            ${{ runner.os }}-go-build-
+      - name: Cache mod deps
+        id: cache-mod-deps
+        uses: actions/cache@v3
+        if: steps.check-files.outputs.has_changes == 'true'
+        with:
+          path: ${{ steps.go-cache-paths.outputs.go-mod }}
+          key: ${{ runner.os }}-go-mod-${{ hashFiles('**/go.mod') }}
+          restore-keys: |
+            ${{ runner.os }}-go-mod-${{ hashFiles('**/go.mod') }}
+            ${{ runner.os }}-go-mod-
+      - name: Download Dependencies
+        if: ((steps.check-files.outputs.has_changes == 'true') && (steps.cache-deps.outputs.cache-hit != 'true' || steps.cache-mod-deps.outputs.cache-hit != 'true'))
+        run: |
+          go mod download
+          go install ./...
+        working-directory: ./golang
+      - name: Build Binaries
+        if: steps.check-files.outputs.has_changes == 'true'
+        run: make build
+        working-directory: ./golang
+      - name: Go Coverage
+        if: steps.check-files.outputs.has_changes == 'true'
+        run: make test
+        working-directory: ./golang
+
+  python:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        python-version: ["^3.11"]
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Get changed files since last commit
+        id: changed-files
+        uses: tj-actions/changed-files@v35.4.1
+        with:
+          since_last_remote_commit: "false"
+      - name: Check changed files
+        id: check-files
+        run: echo "has_changes=$(echo ${{ contains(steps.changed-files.outputs.all_modified_files, 'python/') }})" >> $GITHUB_OUTPUT
+      - name: Use Python ${{ matrix.python-version }}
+        if: steps.check-files.outputs.has_changes == 'true'
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Setup Virtual Environment
+        if: steps.check-files.outputs.has_changes == 'true'
+        run: |
+          python -m venv .venv
+          source .venv/bin/activate
+        working-directory: ./python
+      - name: Download Dependencies
+        if: ((steps.check-files.outputs.has_changes == 'true'))
+        run: |
+          pip install -U pip
+          pip install -r requirements.txt
+        working-directory: ./python
+      - name: Pylint
+        if: steps.check-files.outputs.has_changes == 'true'
+        run: pylint *.py
+        working-directory: ./python
+      - name: Python Coverage
+        if: steps.check-files.outputs.has_changes == 'true'
+        run: ./coverage.sh
+        working-directory: ./python
+
+  dotnet:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        dotnet-version: ["^7.0"]
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Get changed files since last commit
+        id: changed-files
+        uses: tj-actions/changed-files@v35.4.1
+        with:
+          since_last_remote_commit: "false"
+      - name: Check changed files
+        id: check-files
+        run: echo "has_changes=$(echo ${{ contains(steps.changed-files.outputs.all_modified_files, 'dotnet/') }})" >> $GITHUB_OUTPUT
+      - name: Use .NET ${{ matrix.dotnet-version }}
+        if: steps.check-files.outputs.has_changes == 'true'
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: ${{ matrix.dotnet-version }}
+      - name: Run build
+        if: steps.check-files.outputs.has_changes == 'true'
+        run: dotnet build
+        working-directory: ./dotnet
+      - name: .NET Coverage
+        if: steps.check-files.outputs.has_changes == 'true'
+        run: ./coverage.sh
+        working-directory: ./dotnet
+
+  java:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        java-version: ["17"]
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Get changed files since last commit
+        id: changed-files
+        uses: tj-actions/changed-files@v35.4.1
+        with:
+          since_last_remote_commit: "false"
+      - name: Check changed files
+        id: check-files
+        run: echo "has_changes=$(echo ${{ contains(steps.changed-files.outputs.all_modified_files, 'java/') }})" >> $GITHUB_OUTPUT
+      - name: Use Java ${{ matrix.java-version }}
+        if: steps.check-files.outputs.has_changes == 'true'
+        uses: actions/setup-java@v3
+        with:
+          distribution: "zulu"
+          java-version: ${{ matrix.java-version }}
+      - name: Run build
+        if: steps.check-files.outputs.has_changes == 'true'
+        run: ./gradlew build -x test
+        working-directory: ./java
+      - name: Java Coverage
+        if: steps.check-files.outputs.has_changes == 'true'
+        run: ./coverage.sh
+        working-directory: ./java
