@@ -1,12 +1,18 @@
 import { defineConfig } from 'vitest/config'
 import vue from '@vitejs/plugin-vue'
-import tsconfigPaths from 'vite-tsconfig-paths'
+import path from 'path'
 
-const plugins = [vue(), tsconfigPaths({ root: 'test/unit' })]
+const plugins = [vue()]
 
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins,
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, './src'),
+      '@test': path.resolve(__dirname, './test')
+    }
+  },
   test: {
     environment: 'happy-dom',
     globals: true,
