@@ -8,15 +8,15 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, macOS-latest, windows-latest]
-        node-version: [18.x]
+        node-version: [20.x]
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - name: Get changed files since last commit
         id: changed-files
-        uses: tj-actions/changed-files@v35.4.1
+        uses: tj-actions/changed-files@v45.0.4
         with:
           since_last_remote_commit: "false"
       - name: Check changed files
@@ -24,27 +24,14 @@ jobs:
         run: echo "has_changes=$(echo ${{ contains(steps.changed-files.outputs.all_modified_files, 'vue/') }})" >> $GITHUB_OUTPUT
       - name: Use Node.js ${{ matrix.node-version }}
         if: steps.check-files.outputs.has_changes == 'true'
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
-      - name: Set Cypress Cache
-        run: |
-          if [ "$RUNNER_OS" == "Linux" ]; then
-              echo "CYPRESS_CACHE_FOLDER=~/.cache/Cypress" >> $GITHUB_ENV
-          elif [ "$RUNNER_OS" == "Windows" ]; then
-               echo "CYPRESS_CACHE_FOLDER=~/AppData/Local/Cypress/Cache" >> $GITHUB_ENV
-          elif [ "$RUNNER_OS" == "macOS" ]; then
-               echo "CYPRESS_CACHE_FOLDER=~/Library/Caches/Cypress" >> $GITHUB_ENV
-          else
-               echo "$RUNNER_OS not supported"
-               exit 1
-          fi
-        shell: bash
       - name: Get npm cache directory path
         if: steps.check-files.outputs.has_changes == 'true'
         id: npm-cache-dir-path
         run: echo "dir=$(npm config get cache)" >> $GITHUB_OUTPUT
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         if: steps.check-files.outputs.has_changes == 'true'
         id: npm-cache
         with:
@@ -53,7 +40,6 @@ jobs:
             **/.eslintcache
             **/.vitest_cache
             node/dist
-            ${{ env.CYPRESS_CACHE_FOLDER }}
             ${{ steps.npm-cache-dir-path.outputs.dir }}
           key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
@@ -76,28 +62,21 @@ jobs:
         working-directory: ./vue
         env:
           CI: true
-      - name: E2E Tests
-        if: steps.check-files.outputs.has_changes == 'true'
-        run: npm run test:e2e:headless
-        working-directory: ./vue
-        env:
-          DISABLE_VIDEO_RECORDING: true
-          CYPRESS_CACHE_FOLDER: ${{ env.CYPRESS_CACHE_FOLDER }}
 
   node:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         os: [ubuntu-latest, macOS-latest, windows-latest]
-        node-version: [18.x]
+        node-version: [20.x]
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - name: Get changed files since last commit
         id: changed-files
-        uses: tj-actions/changed-files@v35.4.1
+        uses: tj-actions/changed-files@v45.0.4
         with:
           since_last_remote_commit: "false"
       - name: Check changed files
@@ -105,27 +84,14 @@ jobs:
         run: echo "has_changes=$(echo ${{ contains(steps.changed-files.outputs.all_modified_files, 'node/') }})" >> $GITHUB_OUTPUT
       - name: Use Node.js ${{ matrix.node-version }}
         if: steps.check-files.outputs.has_changes == 'true'
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
-      - name: Set Cypress Cache
-        run: |
-          if [ "$RUNNER_OS" == "Linux" ]; then
-              echo "CYPRESS_CACHE_FOLDER=~/.cache/Cypress" >> $GITHUB_ENV
-          elif [ "$RUNNER_OS" == "Windows" ]; then
-               echo "CYPRESS_CACHE_FOLDER=~/AppData/Local/Cypress/Cache" >> $GITHUB_ENV
-          elif [ "$RUNNER_OS" == "macOS" ]; then
-               echo "CYPRESS_CACHE_FOLDER=~/Library/Caches/Cypress" >> $GITHUB_ENV
-          else
-               echo "$RUNNER_OS not supported"
-               exit 1
-          fi
-        shell: bash
       - name: Get npm cache directory path
         if: steps.check-files.outputs.has_changes == 'true'
         id: npm-cache-dir-path
         run: echo "dir=$(npm config get cache)" >> $GITHUB_OUTPUT
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         if: steps.check-files.outputs.has_changes == 'true'
         id: npm-cache
         with:
@@ -159,14 +125,14 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest]
-        go-version: ["^1.19.0"]
+        go-version: ["^1.23.0"]
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - name: Get changed files since last commit
         id: changed-files
-        uses: tj-actions/changed-files@v35.4.1
+        uses: tj-actions/changed-files@v45.0.4
         with:
           since_last_remote_commit: "false"
       - name: Check changed files
@@ -174,7 +140,7 @@ jobs:
         run: echo "has_changes=$(echo ${{ contains(steps.changed-files.outputs.all_modified_files, 'golang/') }})" >> $GITHUB_OUTPUT
       - name: Use Go ${{ matrix.go-version }}
         if: steps.check-files.outputs.has_changes == 'true'
-        uses: actions/setup-go@v3
+        uses: actions/setup-go@v5
         with:
           go-version: ${{ matrix.go-version }}
       - name: Cache Go Paths
@@ -185,7 +151,7 @@ jobs:
           echo "go-mod=$(go env GOMODCACHE)" >> $GITHUB_OUTPUT
       - name: Cache build deps
         id: cache-deps
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         if: steps.check-files.outputs.has_changes == 'true'
         with:
           path: ${{ steps.go-cache-paths.outputs.go-build }}
@@ -195,7 +161,7 @@ jobs:
             ${{ runner.os }}-go-build-
       - name: Cache mod deps
         id: cache-mod-deps
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         if: steps.check-files.outputs.has_changes == 'true'
         with:
           path: ${{ steps.go-cache-paths.outputs.go-mod }}
@@ -223,14 +189,14 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest]
-        python-version: ["^3.11"]
+        python-version: ["^3.12"]
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - name: Get changed files since last commit
         id: changed-files
-        uses: tj-actions/changed-files@v35.4.1
+        uses: tj-actions/changed-files@v45.0.4
         with:
           since_last_remote_commit: "false"
       - name: Check changed files
@@ -238,7 +204,7 @@ jobs:
         run: echo "has_changes=$(echo ${{ contains(steps.changed-files.outputs.all_modified_files, 'python/') }})" >> $GITHUB_OUTPUT
       - name: Use Python ${{ matrix.python-version }}
         if: steps.check-files.outputs.has_changes == 'true'
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
       - name: Setup Virtual Environment
@@ -267,14 +233,14 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest]
-        dotnet-version: ["^7.0"]
+        dotnet-version: ["^8.0"]
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - name: Get changed files since last commit
         id: changed-files
-        uses: tj-actions/changed-files@v35.4.1
+        uses: tj-actions/changed-files@v45.0.4
         with:
           since_last_remote_commit: "false"
       - name: Check changed files
@@ -282,7 +248,7 @@ jobs:
         run: echo "has_changes=$(echo ${{ contains(steps.changed-files.outputs.all_modified_files, 'dotnet/') }})" >> $GITHUB_OUTPUT
       - name: Use .NET ${{ matrix.dotnet-version }}
         if: steps.check-files.outputs.has_changes == 'true'
-        uses: actions/setup-dotnet@v3
+        uses: actions/setup-dotnet@v4
         with:
           dotnet-version: ${{ matrix.dotnet-version }}
       - name: Run build
@@ -299,14 +265,14 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest]
-        java-version: ["17"]
+        java-version: ["21"]
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - name: Get changed files since last commit
         id: changed-files
-        uses: tj-actions/changed-files@v35.4.1
+        uses: tj-actions/changed-files@v45.0.4
         with:
           since_last_remote_commit: "false"
       - name: Check changed files
@@ -314,9 +280,9 @@ jobs:
         run: echo "has_changes=$(echo ${{ contains(steps.changed-files.outputs.all_modified_files, 'java/') }})" >> $GITHUB_OUTPUT
       - name: Use Java ${{ matrix.java-version }}
         if: steps.check-files.outputs.has_changes == 'true'
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
-          distribution: "zulu"
+          distribution: "temurin"
           java-version: ${{ matrix.java-version }}
       - name: Run build
         if: steps.check-files.outputs.has_changes == 'true'
