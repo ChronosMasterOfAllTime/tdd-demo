@@ -8,9 +8,9 @@ module.exports = {
     '@babel/preset-typescript'
   ],
   plugins: [
-    [require.resolve('@babel/plugin-proposal-class-properties')],
-    [require.resolve('@babel/plugin-proposal-object-rest-spread')],
-    [require.resolve('@babel/plugin-proposal-private-methods')],
+    [require.resolve('@babel/plugin-transform-class-properties')],
+    [require.resolve('@babel/plugin-transform-object-rest-spread')],
+    [require.resolve('@babel/plugin-transform-private-methods')],
     [
       require.resolve('babel-plugin-module-resolver'),
       {

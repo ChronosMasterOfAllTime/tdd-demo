@@ -46,9 +46,9 @@ class Person:
 
 if __name__ == '__main__':
     person = Person()
-    input_id = person.set_name('Ευστάθιος')
-    print(f'User Ευστάθιος has been added with id {input_id}')
-    print(f'User associated with id {input_id} is ', person.get_user_by_id(input_id))
+    new_user_id = person.set_user({'username': 'Ευστάθιος'})
+    print(f'User Ευστάθιος has been added with id {new_user_id}')
+    print(f'User associated with id {new_user_id} is ', person.get_user_by_id(new_user_id))
 
 
 # Solutions:

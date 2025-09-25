@@ -14,7 +14,7 @@ plugins {
     id 'application'
 
     // fancy test logger
-    id 'com.adarshr.test-logger' version "3.2.0"
+    id 'com.adarshr.test-logger' version "4.0.0"
     
     // java code coverage
     id 'jacoco'
@@ -30,14 +30,14 @@ repositories {
 
 dependencies {
     // Use the latest Groovy version for Spock testing
-    testImplementation 'org.codehaus.groovy:groovy:3.0.19'
+    testImplementation 'org.apache.groovy:groovy:4.0.24'
 
     // Use the awesome Spock testing and specification framework even with Java
     testImplementation 'org.spockframework:spock-core:2.3-groovy-4.0'
     testImplementation 'junit:junit:4.13.2'
 
     // This dependency is used by the application.
-    implementation 'com.google.guava:guava:32.1.2-jre'
+    implementation 'com.google.guava:guava:33.4.0-jre'
 }
 
 application {

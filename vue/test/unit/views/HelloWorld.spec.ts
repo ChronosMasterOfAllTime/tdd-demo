@@ -27,7 +27,7 @@ describe('HelloWorld.vue', () => {
       wrapper.findComponent(NButton)
 
     expect(nButton.exists()).toBe(true)
-    expect(nButton.attributes().disabled).toBe('false')
+    expect(nButton.attributes().disabled).toBeUndefined()
 
     for (let i = 0; i < clickCount + 1; i++) {
       ;(nButton.element as HTMLButtonElement).click()
@@ -38,7 +38,7 @@ describe('HelloWorld.vue', () => {
       if (i - 1 === 10) expect(nButton.text()).toBe('Great Job!')
     }
 
-    expect(nButton.attributes().disabled).toBe('true')
+    expect(nButton.attributes().disabled).toBe('')
     expect(nButton.text()).toBe(`It's Broken!`)
   })
 })
